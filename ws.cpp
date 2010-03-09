@@ -55,6 +55,7 @@ bitspace::nam()
 
 QByteArray authorizationHeader()
 {
+    qDebug() << "using basic http authentication";
     // HTTP Basic authentication header value: base64(username:password)
     QString concatenated = bitspace::ws::Username + ":" + bitspace::ws::Password;
     QByteArray data = concatenated.toLocal8Bit().toBase64();
@@ -91,10 +92,17 @@ QNetworkReply*
 bitspace::ws::get( const QString &method )
 {
     QUrl url = ::url( method );
-    qDebug() << url;
-    QNetworkRequest request( url );
+    QNetworkRequest request;
+    request.setRawHeader("Accept", "application/json");
+    request.setRawHeader("User-Agent", "curl/7.20.0 (x86_64-unknown-linux-gnu) libcurl/7.20.0 OpenSSL/0.9.8l zlib/1.2.3.7");
     if( bitspace::ws::ApiToken.isEmpty() )
         request.setRawHeader("Authorization", authorizationHeader() );
+    else
+    {
+        url.addEncodedQueryItem( "user_credentials", QUrl::toPercentEncoding(bitspace::ws::ApiToken) );
+    }
+    request.setUrl( url );
+    qDebug() << url;
     return nam()->get( request );
 }
 

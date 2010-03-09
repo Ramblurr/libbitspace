@@ -64,7 +64,7 @@ namespace bitspace
         QNetworkRequest header;
         header.setUrl( m_session["url"].toString() );
         header.setRawHeader("User-Agent", "curl/7.20.0 (x86_64-unknown-linux-gnu) libcurl/7.20.");
-        header.setRawHeader("Accept:", "*/*");
+        header.setRawHeader("Accept", "*/*");
         header.setHeader(QNetworkRequest::ContentTypeHeader, QString("multipart/form-data; boundary=" + boundary) );
 
         QByteArray ba;
