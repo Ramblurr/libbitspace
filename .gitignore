@@ -1,0 +1,7 @@
+*.so
+*.so.*
+moc_*
+*.o
+*.pro.user
+Makefile
+tests/
