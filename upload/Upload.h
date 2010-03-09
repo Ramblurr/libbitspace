@@ -35,6 +35,7 @@ namespace bitspace
            bool upload( const QString & file_path  );
    signals:
            void uploadProgress( qint64, qint64 );
+           void uploadFinished();
     private slots:
            void slotNewSession();
            void slotUploadFinished();

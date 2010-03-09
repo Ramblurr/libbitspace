@@ -180,5 +180,6 @@ namespace bitspace
     {
         QString reply = m_notifyReply->readAll();
         qDebug() << reply;
+        emit uploadFinished();
     }
 }
