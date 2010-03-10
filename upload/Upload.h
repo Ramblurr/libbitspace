@@ -36,10 +36,16 @@ namespace bitspace
    signals:
            void uploadProgress( qint64, qint64 );
            void uploadFinished();
+           void uploadError( QString );
+
+   public slots:
+          void slotAbort();
+
     private slots:
            void slotNewSession();
            void slotUploadFinished();
            void slotNotifyFinished();
+           void slotError( QNetworkReply::NetworkError );
 
     private:
            QNetworkReply* m_sessionReply;

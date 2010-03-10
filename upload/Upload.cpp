@@ -81,45 +81,6 @@ namespace bitspace
             ba.append(sep);
         }
 
-
-//        QVariantMap p = m_session["params"].toMap();
-//        ba.append( QString("Content-Disposition: form-data; name=\"%1\"").arg( "policy" ).toUtf8() );
-//        ba.append(nl);
-//        ba.append(nl);
-//        ba.append( p["policy"].toString().toUtf8() );
-//        ba.append(nl);
-//        ba.append(sep);
-//
-//        ba.append( QString("Content-Disposition: form-data; name=\"%1\"").arg( "success_action_status" ).toUtf8() );
-//        ba.append(nl);
-//        ba.append(nl);
-//        ba.append( p["success_action_status"].toString().toUtf8());
-//        ba.append(nl);
-//        ba.append(sep);
-//
-//        ba.append( QString("Content-Disposition: form-data; name=\"%1\"").arg( "signature" ).toUtf8() );
-//        ba.append(nl);
-//        ba.append(nl);
-//        ba.append( p["signature"].toString().toUtf8());
-//        ba.append(nl);
-//        ba.append(sep);
-//
-//
-//        ba.append( QString("Content-Disposition: form-data; name=\"%1\"").arg( "AWSAccessKeyId" ).toUtf8() );
-//        ba.append(nl);
-//        ba.append(nl);
-//        ba.append( p["AWSAccessKeyId"].toString().toUtf8());
-//        ba.append(nl);
-//        ba.append(sep);
-//
-//        ba.append( QString("Content-Disposition: form-data; name=\"%1\"").arg( "key" ).toUtf8() );
-//        ba.append(nl);
-//        ba.append(nl);
-//        ba.append( p["key"].toString().toUtf8());
-//        ba.append(nl);
-//        ba.append(sep);
-
-
         m_filename = QFileInfo(file_path).fileName();
         QString file_param = m_session["file_param"].toString();
             ba.append( QString("Content-Disposition: form-data; name=\"%1\"; filename=\"%2\"").arg( file_param, m_filename ).toUtf8() );
@@ -140,6 +101,7 @@ namespace bitspace
         m_uploadReply = bitspace::nam()->post( header, ba);
         connect(m_uploadReply, SIGNAL(uploadProgress(qint64,qint64)), this, SIGNAL(uploadProgress(qint64,qint64)));
         connect(m_uploadReply, SIGNAL(finished()), this, SLOT(slotUploadFinished()));
+        connect(m_uploadReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotUploadFinished()));
         return true;
     }
 
@@ -182,4 +144,19 @@ namespace bitspace
         qDebug() << reply;
         emit uploadFinished();
     }
+
+    void Upload::slotError( QNetworkReply::NetworkError error )
+    {
+        qDebug() << "Error: " << error << m_uploadReply->errorString();
+        emit uploadError( m_uploadReply->errorString() );
+    }
+
+    void Upload::slotAbort()
+    {
+        if( m_uploadReply && m_uploadReply->isRunning() )
+            m_uploadReply->abort();
+        else if( m_notifyReply && m_notifyReply->isRunning() )
+            m_notifyReply->abort();
+    }
+
 }
