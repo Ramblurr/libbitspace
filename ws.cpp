@@ -110,7 +110,6 @@ QNetworkReply*
 bitspace::ws::post( QMap<QString, QString> params, const QString &method )
 {
     QUrl url = ::url( method );
-    qDebug() << url;
     QByteArray query;
     QMapIterator<QString, QString> i( params );
     while (i.hasNext()) {
@@ -120,7 +119,16 @@ bitspace::ws::post( QMap<QString, QString> params, const QString &method )
                + QUrl::toPercentEncoding( i.value() )
                + '&';
     }
-    return nam()->post( QNetworkRequest(url), query );
+    QNetworkRequest request;
+    if( bitspace::ws::ApiToken.isEmpty() )
+        request.setRawHeader("Authorization", authorizationHeader() );
+    else
+    {
+        url.addEncodedQueryItem( "user_credentials", QUrl::toPercentEncoding(bitspace::ws::ApiToken) );
+    }
+    request.setUrl( url );
+    qDebug() << url;
+    return nam()->post( request, query );
 }
 
 QVariantMap bitspace::ws::parse( QNetworkReply* reply )
