@@ -13,20 +13,50 @@
  * You should have received a copy of the GNU General Public License along with         *
  * this program.  If not, see <http://www.gnu.org/licenses/>.                           *
  ****************************************************************************************/
-#ifndef BITSPACE_GLOBAL_H
-#define BITSPACE_GLOBAL_H
 
-#include <QtCore/qglobal.h>
+#ifndef BITSPACE_UPLOAD_H
+#define BITSPACE_UPLOAD_H
 
-#if defined(BITSPACE_LIBRARY)
-#  define BITSPACESHARED_EXPORT Q_DECL_EXPORT
-#else
-#  define BITSPACESHARED_EXPORT Q_DECL_IMPORT
-#endif
+#include "bitspace_global.h"
+#include "Upload.h"
+
+#include <QNetworkReply>
+#include <QObject>
+#include <QVariant>
 
 namespace bitspace
 {
-    class UploadManager;
-}
 
-#endif // BITSPACE_GLOBAL_H
+    class BITSPACESHARED_EXPORT UploadManager : public QObject
+    {
+        Q_OBJECT
+    public:
+           UploadManager( QObject* parent = 0 );
+           void startNewSession();
+
+           /**
+             * Creates an upload job for the file
+             * and returns an Upload object that
+             * can be used to get progress updates or abort the job.
+             */
+           Upload* upload( const QString & file_path  );
+
+           /**
+             * returns true if the UploadManager has a valid session
+             * and is ready to take uploads.
+             */
+           bool isValid() const;
+
+    private slots:
+           void slotNewSession();
+
+    private:
+           QNetworkReply* m_sessionReply;
+
+           QVariantMap m_session;
+           QString m_filename;
+
+    };
+
+}
+#endif // BITSPACE_UPLOAD_H

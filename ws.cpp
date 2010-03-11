@@ -140,6 +140,7 @@ QVariantMap bitspace::ws::parse( QNetworkReply* reply )
     if( !data.size() )
     {
         // TODO bad response
+        qDebug() << "TODO bad response";
     }
 
     QString json( data );
